@@ -212,7 +212,7 @@
         margin:       [0.2, 0.2, 0.2, 0.2],
         filename:     `Ficha_Medica_${rut}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 0.8, useCORS: true, logging: false, scrollY: 0 },
+        html2canvas:  { scale: 1.2, useCORS: true, logging: false, scrollY: 0 },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
       };
@@ -228,7 +228,7 @@
         if (botones) botones.style.display = 'flex';
 
         // Petición al servidor
-        const response = await fetch('/api/enviar-pdf', {
+        const response = await fetch('https://medi-data-montemaria.onrender.com/api/enviar-pdf', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email, pdfData: pdfBase64, rut: rut })
