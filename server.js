@@ -57,17 +57,24 @@ app.post('/api/enviar-pdf', async (req, res) => {
   const { email, pdfData } = req.body;
 
   // Configurar servidor SMTP de correo (Ejemplo: Gmail, SendGrid, etc.)
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'francotc0178@gmail.com', 
-      pass: 'cvwf mmml adat dbtu' 
-    }
-  });
+let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: 'francotc0178@gmail.com',
+        pass: 'cvwf mmml adat dbtu'
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
 
-  try {
+    try {
+      await transporter.sendMail({
     await transporter.sendMail({
-      from: '"MediData MonteMaría" <tu_correo_emisor@gmail.com>',
+      from: '"MediData MonteMaría" <francotc0178@gmail.com>',
       to: email,
       subject: 'Ficha Médica Registrada - MediData MonteMaría',
       text: 'Adjunto encontrarás el documento PDF con los datos de tu ficha médica.',
