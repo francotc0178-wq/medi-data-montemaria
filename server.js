@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
-const cors = require('cors');
+const cors = require('50mb');
 const path = require('path');
 
 const app = express();
