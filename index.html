@@ -48,57 +48,55 @@ function validarRut(rut) {
   return rut && rut.trim().length > 7;
 }
 
- async function generarYEnviarPDF() {
-  const emailInput = document.getElementById('email');
-  const rutInput = document.getElementById('rut');
+async function generarYEnviarPDF() {
+      const emailInput = document.getElementById('email');
+      const rutInput = document.getElementById('rut');
 
-  const email = emailInput ? emailInput.value.trim() : '';
-  const rut = rutInput ? rutInput.value.trim() : 'Paciente';
+      const email = emailInput ? emailInput.value.trim() : '';
+      const rut = rutInput ? rutInput.value.trim() : 'Paciente';
 
-  if (!email) {
-    alert("Por favor ingresa un correo electrónico válido.");
-    return;
-  }
+      if (!email) {
+        alert("Por favor ingresa un correo electrónico válido.");
+        return;
+      }
 
-  const element = document.getElementById('ficha-medica-container') || document.body;
+      const element = document.body;
 
-  try {
-    // Generación comprimida (tamaño menor a 500 KB)
-    const opt = {
-      margin:       0.2,
-      filename:     `Ficha_Medica_${rut}.pdf`,
-      image:        { type: 'jpeg', quality: 0.3 },
-      html2canvas:  { scale: 1, useCORS: true, logging: false },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
-    };
+      try {
+        const opt = {
+          margin:       0.2,
+          filename:     `Ficha_Medica_${rut}.pdf`,
+          image:        { type: 'jpeg', quality: 0.3 },
+          html2canvas:  { scale: 1, useCORS: true, logging: false },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
+        };
 
-    const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+        const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
 
-    // Envío directo al servidor en Render
-    const response = await fetch('https://medi-data-montemaria.onrender.com/api/enviar-pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email,
-        pdfData: pdfBase64
-      })
-    });
+        const response = await fetch('https://medi-data-montemaria.onrender.com/api/enviar-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            pdfData: pdfBase64
+          })
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    if (response.ok && data.success) {
-      alert("¡Ficha médica enviada correctamente a tu correo!");
-    } else {
-      alert("Respuesta del servidor: " + (data.error || "No se pudo procesar el envío."));
+        if (response.ok && data.success) {
+          alert("¡Ficha médica enviada con éxito a tu correo!");
+        } else {
+          alert("Error del servidor: " + (data.error || "No se pudo procesar el envío."));
+        }
+
+      } catch (err) {
+        console.error("Error al transmitir PDF:", err);
+        alert("Error de conexión: " + err.message);
+      }
     }
-
-  } catch (err) {
-    console.error("Error de conexión:", err);
-    alert("Error al comunicar con el servidor: " + err.message);
-  }
-}
 </script>
 </body>
 </html>
