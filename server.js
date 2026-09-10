@@ -29,7 +29,7 @@ app.post('/api/enviar-pdf', async (req, res) => {
 
     // IMPORTANTE: En el plan gratuito de Resend, 'to' DEBE SER el mismo correo con el que te registraste en Resend.
     const response = await resend.emails.send({
-      from: 'MediData <onboarding@resend.dev>',
+      from: 'MediData <francotc0178@gmail.com>',
       to: [email], // Si falla, reemplaza temporalmente aquí por tu correo de registro de Resend
       subject: 'Ficha Médica Registrada - MediData MonteMaría',
       html: '<p>Adjunto encontraras la ficha médica.</p>',
