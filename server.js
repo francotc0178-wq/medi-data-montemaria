@@ -61,7 +61,7 @@ app.post('/api/enviar-pdf', async (req, res) => {
     service: 'gmail',
     auth: {
       user: 'francotc0178@gmail.com', 
-      pass: 'tvks qymw zfej bhpx' 
+      pass: 'cvwf mmml adat dbtu' 
     }
   });
 
