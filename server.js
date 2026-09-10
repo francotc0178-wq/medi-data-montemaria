@@ -5,45 +5,34 @@ const { Resend } = require('resend');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Inicialización de la API de Resend
-// Reemplaza 're_TU_API_KEY_AQUI' con tu clave real obtenida en Resend
-const resend = new Resend('re_TU_API_KEY_AQUI');
+// Utiliza la variable de entorno de Render o una clave directa si existe
+const apiKey = process.env.RESEND_API_KEY || 're_AQUI_TU_API_KEY';
+const resend = new Resend(apiKey);
 
-// Middleware
+// Middleware con límites ampliados
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
-// Ruta de prueba
+// Ruta de estado
 app.get('/', (req, res) => {
   res.send('Servidor MediData MonteMaría funcionando correctamente.');
 });
 
-// Endpoint para consultar fichas (si aplica)
-app.get('/api/fichas', (req, res) => {
-  res.json([]);
-});
-
-// Endpoint principal para recibir y enviar el PDF por correo
+// Endpoint principal
 app.post('/api/enviar-pdf', async (req, res) => {
   const { email, pdfData } = req.body;
 
-  // Validación de campos requeridos
   if (!email || !pdfData) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Faltan datos requeridos (email o pdfData).' 
-    });
+    return res.status(400).json({ success: false, error: 'Faltan datos requeridos.' });
   }
 
   try {
-    // Limpieza de cabecera Base64 si viene del navegador
     const base64Clean = pdfData.includes(';base64,') 
       ? pdfData.split(';base64,').pop() 
       : pdfData;
 
-    // Petición de envío mediante la API HTTP de Resend
-    const { data, error } = await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'MediData <onboarding@resend.dev>',
       to: email,
       subject: 'Ficha Médica Registrada - MediData MonteMaría',
@@ -56,33 +45,19 @@ app.post('/api/enviar-pdf', async (req, res) => {
       ],
     });
 
-    // Manejo de errores devueltos por la API de Resend
-    if (error) {
-      console.error('Error devuelto por Resend:', error);
-      return res.status(400).json({ 
-        success: false, 
-        error: error.message || 'Error al despachar el correo.' 
-      });
+    if (result.error) {
+      console.error('Error de Resend:', result.error);
+      return res.status(400).json({ success: false, error: result.error.message });
     }
 
-    // Respuesta exitosa al cliente (Netlify)
-    console.log('Correo enviado con éxito. ID:', data.id);
-    return res.status(200).json({ 
-      success: true, 
-      message: 'Correo enviado con éxito',
-      id: data.id 
-    });
+    return res.status(200).json({ success: true, message: 'Correo enviado con éxito' });
 
   } catch (error) {
-    console.error('Error interno del servidor:', error);
-    return res.status(500).json({ 
-      success: false, 
-      error: error.message || 'Error interno del servidor.' 
-    });
+    console.error('Error interno:', error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// Inicio del servidor Express
 app.listen(PORT, () => {
   console.log(`Servidor activo en el puerto ${PORT}`);
 });
