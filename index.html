@@ -70,11 +70,11 @@ async function generarYEnviarPDF() {
 
   try {
     // Configuración liviana de PDF (compresión activada)
-   const opt = {
+  const opt = {
   margin:       [0.2, 0.2, 0.2, 0.2],
   filename:     `Ficha_Medica_${rut}.pdf`,
-  image:        { type: 'jpeg', quality: 0.5 },
-  html2canvas:  { scale: 1 },
+  image:        { type: 'jpeg', quality: 0.3 },
+  html2canvas:  { scale: 1, useCORS: true, logging: false, scrollY: 0 },
   jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
 };
 
