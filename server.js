@@ -23,7 +23,7 @@ app.use(express.static('public')); // Carpeta para renderizar index.html
 let baseDeDatosFichas = [];
 
 // API: Guardar datos y adjuntos en el Servidor
-app.post('/api/fichas', upload.single('documentoAdjunto'), (req, res) => {
+app.post('/api/enviar-pdf', upload.single('documentoAdjunto'), (req, res) => {
   try {
     const nuevaFicha = {
       id: Date.now(),
