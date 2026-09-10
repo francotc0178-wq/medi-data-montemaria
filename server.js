@@ -5,20 +5,18 @@ const { Resend } = require('resend');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de CORS y Límites de Payload (100MB)
+// Configuración de CORS y Límites de Carga Ampliados a 100MB
 app.use(cors());
 app.use(express.json({ limit: '100mb', extended: true }));
 app.use(express.urlencoded({ limit: '100mb', extended: true, parameterLimit: 50000 }));
 
-// Inicialización de Resend desde Variable de Entorno
+// Cliente de Resend
 const resend = new Resend(process.env.RESEND_API_KEY || 're_fallback');
 
-// Ruta de comprobación
 app.get('/', (req, res) => {
-  res.send('Servidor MediData MonteMaría activo y operativo.');
+  res.send('Servidor MediData MonteMaría totalmente operativo.');
 });
 
-// Endpoint principal
 app.post('/api/enviar-pdf', async (req, res) => {
   const { email, pdfData } = req.body;
 
@@ -39,7 +37,7 @@ app.post('/api/enviar-pdf', async (req, res) => {
       to: email,
       replyTo: 'francotc0178@gmail.com',
       subject: 'Ficha Médica Registrada - MediData MonteMaría',
-      html: '<p>Adjunto encontrarás el documento PDF correspondiente a la ficha médica.</p>',
+      html: '<p>Adjunto encontrarás la ficha médica solicitada.</p>',
       attachments: [
         {
           filename: 'Ficha_Medica.pdf',
@@ -52,7 +50,7 @@ app.post('/api/enviar-pdf', async (req, res) => {
       console.error('Error de Resend:', response.error);
       return res.status(400).json({ 
         success: false, 
-        error: response.error.message || 'Error al despachar el correo.' 
+        error: response.error.message || 'Error en el despacho del correo.' 
       });
     }
 
@@ -62,7 +60,7 @@ app.post('/api/enviar-pdf', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error interno:', error);
+    console.error('Error interno del servidor:', error);
     return res.status(500).json({ 
       success: false, 
       error: error.message || 'Error interno del servidor.' 
@@ -71,5 +69,5 @@ app.post('/api/enviar-pdf', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor activo en puerto ${PORT}`);
+  console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
