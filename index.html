@@ -70,14 +70,13 @@ async function generarYEnviarPDF() {
 
   try {
     // Configuración liviana de PDF (compresión activada)
-    const opt = {
-      margin:       [0.2, 0.2, 0.2, 0.2],
-      filename:     `Ficha_Medica_${rut}.pdf`,
-      image:        { type: 'jpeg', quality: 0.6 },
-      html2canvas:  { scale: 1.2, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true },
-      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+   const opt = {
+  margin:       [0.2, 0.2, 0.2, 0.2],
+  filename:     `Ficha_Medica_${rut}.pdf`,
+  image:        { type: 'jpeg', quality: 0.5 },
+  html2canvas:  { scale: 1 },
+  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
+};
 
     // Generar Base64 del PDF
     const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
