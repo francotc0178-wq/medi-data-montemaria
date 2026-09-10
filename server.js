@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,31 +30,44 @@ app.post('/api/enviar-pdf', async (req, res) => {
   }
 
   try {
+    const doc = new PDFDocument();
+    let buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
+    
+    doc.fontSize(20).text('MediData MonteMaría', { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(14).text(`Paciente: ${nombre || 'N/A'}`);
+    doc.text(`RUT: ${rut || 'N/A'}`);
+    doc.moveDown();
+    doc.fontSize(12).text(`Detalles Registrados:\n${datos || 'Ficha generada exitosamente.'}`);
+    doc.end();
+
+    const pdfBuffer = await new Promise((resolve) => {
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+    });
+
     const mailOptions = {
       from: '"MediData MonteMaría" <francotc0178@gmail.com>',
       to: email,
-      subject: `Ficha Médica - ${nombre || 'Paciente'} (${rut || 'Sin RUT'})`,
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-          <h2 style="color: #1e40af;">Ficha Médica Registrada</h2>
-          <p><strong>Paciente:</strong> ${nombre || 'N/A'}</p>
-          <p><strong>RUT:</strong> ${rut || 'N/A'}</p>
-          <hr />
-          <p><strong>Detalles registrados:</strong></p>
-          <p>${datos || 'Registro completado exitosamente.'}</p>
-        </div>
-      `
+      subject: `Ficha Médica - ${nombre || 'Paciente'}`,
+      html: `<p>Estimado/a,</p><p>Se adjunta la ficha médica del paciente <strong>${nombre}</strong>.</p>`,
+      attachments: [
+        {
+          filename: `Ficha_Medica_${rut || 'Paciente'}.pdf`,
+          content: pdfBuffer
+        }
+      ]
     };
 
     await transporter.sendMail(mailOptions);
-    return res.status(200).json({ success: true, message: 'Correo enviado con éxito.' });
+    return res.status(200).json({ success: true, message: 'Ficha enviada con éxito.' });
 
   } catch (error) {
-    console.error('Error al enviar:', error);
+    console.error('Error en el servidor:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor en puerto ${PORT}`);
+  console.log(`Servidor activo en puerto ${PORT}`);
 });
