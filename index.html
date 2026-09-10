@@ -47,7 +47,6 @@
 function validarRut(rut) {
   return rut && rut.trim().length > 7;
 }
-
 async function generarYEnviarPDF() {
   const emailInput = document.getElementById('email');
   const rutInput = document.getElementById('rut');
@@ -101,6 +100,8 @@ async function generarYEnviarPDF() {
     alert("Error de conexión al enviar el PDF: " + err.message);
   }
 }
+
+ 
 </script>
 </body>
 </html>
