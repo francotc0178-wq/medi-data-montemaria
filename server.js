@@ -64,7 +64,7 @@ let transporter = nodemailer.createTransport({
       requireTLS: true,
       auth: {
         user: 'francotc0178@gmail.com',
-        pass: 'cvwf mmml adat dbtu'
+        pass: 'cvwfmmmladatdbtu'
       },
       tls: {
         rejectUnauthorized: false
