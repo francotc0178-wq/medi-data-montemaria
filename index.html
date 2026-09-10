@@ -262,7 +262,7 @@
       const formData = new FormData(e.target);
 
       try {
-        const response = await fetch('/api/fichas', {
+        const response = await fetch('https://medidata-backend.onrender.com/api/enviar-pdf', {
           method: 'POST',
           body: formData
         });
