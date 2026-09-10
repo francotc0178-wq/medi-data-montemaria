@@ -61,27 +61,22 @@ async function generarYEnviarPDF() {
     return;
   }
 
-  if (!validarRut(rut)) {
-    alert("Por favor ingresa un RUT válido.");
-    return;
-  }
-
-  const element = document.getElementById('ficha-medica-container');
+  const element = document.getElementById('ficha-medica-container') || document.body;
 
   try {
-    // Configuración liviana de PDF (compresión activada)
-  const opt = {
-  margin:       [0.2, 0.2, 0.2, 0.2],
-  filename:     `Ficha_Medica_${rut}.pdf`,
-  image:        { type: 'jpeg', quality: 0.3 },
-  html2canvas:  { scale: 1, useCORS: true, logging: false, scrollY: 0 },
-  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
-};
+    // Configuración ultraligera para envío rápido
+    const opt = {
+      margin:       [0.2, 0.2, 0.2, 0.2],
+      filename:     `Ficha_Medica_${rut}.pdf`,
+      image:        { type: 'jpeg', quality: 0.5 },
+      html2canvas:  { scale: 1, useCORS: true, logging: false },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait', compress: true }
+    };
 
-    // Generar Base64 del PDF
+    // Generación comprimida
     const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
 
-    // Enviar a la URL exacta del backend en Render
+    // Envío directo al servidor en Render
     const response = await fetch('https://medi-data-montemaria.onrender.com/api/enviar-pdf', {
       method: 'POST',
       headers: {
@@ -93,6 +88,10 @@ async function generarYEnviarPDF() {
       })
     });
 
+    if (!response.ok) {
+      throw new Error(`Respuesta del servidor: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (data.success) {
@@ -103,7 +102,7 @@ async function generarYEnviarPDF() {
 
   } catch (err) {
     console.error("Error al procesar el envío:", err);
-    alert("Error al generar o enviar el PDF: " + err.message);
+    alert("Error al generar o transmitir el PDF: " + err.message);
   }
 }
 </script>
